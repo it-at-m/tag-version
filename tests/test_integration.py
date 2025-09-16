@@ -1,5 +1,5 @@
 """
-Integration tests for the tagger package.
+Integration tests for the tag_version package.
 """
 
 import os

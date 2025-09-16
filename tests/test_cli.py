@@ -1,5 +1,5 @@
 """
-Tests for the tagger CLI module.
+Tests for the tag_version CLI module.
 """
 
 import os
@@ -24,11 +24,11 @@ def test_load_config():
         config_path = os.path.join(temp_dir, "pyproject.toml")
         with open(config_path, "w") as f:
             f.write("""
-[tool.tagger]
+[tool.tag_version]
 services = ["test1", "test2"]
 prefix_format = "{service}-v"
 
-[tool.tagger.service_links]
+[tool.tag_version.service_links]
 test1 = "https://example.com/test1"
 test2 = "https://example.com/test2"
             """)

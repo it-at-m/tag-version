@@ -42,7 +42,7 @@ Issues = "https://github.com/it-at-m/tag_version/issues"
 
 
 
-[tool.tagger]
+[tool.tag_version]
 # List of available services
 services = ["api", "ui", "backend", "database"]
 
@@ -50,7 +50,7 @@ services = ["api", "ui", "backend", "database"]
 prefix_format = "myproject-{service}-"
 
 # Links to service resources shown after successful tag push
-[tool.tagger.service_links]
+[tool.tag_version.service_links]
 api = "https://github.com/myorg/myproject/pkgs/container/myproject-api"
 ui = "https://github.com/myorg/myproject/pkgs/container/myproject-ui"
 backend = "https://github.com/myorg/myproject/pkgs/container/myproject-backend"

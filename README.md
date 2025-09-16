@@ -39,8 +39,8 @@ uv add tag_version
 ### From source
 
 ```bash
-git clone https://github.com/it-at-m/tagger.git
-cd tagger
+git clone https://github.com/it-at-m/tag-version.git
+cd tag-version
 pip install .
 ```
 
@@ -51,25 +51,25 @@ pip install .
 Simply run the command without parameters for interactive prompts:
 
 ```bash
-tagger
+tag-version
 ```
 
 With uv:
 
 ```bash
-uv run tagger
+uv run tag-version
 ```
 
 ### Basic Usage
 
 ```bash
-tagger --service frontend --version-type patch 
+tag-version --service frontend --version-type patch 
 ```
 
 When using uv:
 
 ```bash
-uv run tagger --service frontend --version-type patch
+uv run tag-version --service frontend --version-type patch
 ```
 
 
@@ -97,33 +97,33 @@ Options:
 ### Create a patch version for the frontend service
 
 ```bash
-tagger -s frontend -t patch
+tag-version -s frontend -t patch
 ```
 
 ### Create a major version with a custom prefix
 
 ```bash
-tagger --prefix custom-project- --version-type major
+tag-version --prefix custom-project- --version-type major
 ```
 
 ### Non-interactive mode with automatic confirmation
 
 ```bash
-tagger --service core --version-type minor --yes
+tag-version --service core --version-type minor --yes
 ```
 
 ### Use custom services list
 
 ```bash
-tagger --services-list "api,ui,database" --service api --version-type minor
+tag-version --services-list "api,ui,database" --service api --version-type minor
 ```
 
 ## Configuration
 
-Tagger can be configured via the `pyproject.toml` file. Add a `[tool.tagger]` section with the following options:
+`tag-version` can be configured via the `pyproject.toml` file. Add a `[tag_version]` section with the following options:
 
 ```toml
-[tool.tagger]
+[tag_version]
 # List of available services
 services = ["api", "ui", "backend", "database"]
 
@@ -131,7 +131,7 @@ services = ["api", "ui", "backend", "database"]
 prefix_format = "myproject-{service}-"
 
 # Links to service resources shown after successful tag push
-[tool.tagger.service_links]
+[tag_version.service_links]
 api = "https://github.com/myorg/myproject/pkgs/container/myproject-api"
 ui = "https://github.com/myorg/myproject/pkgs/container/myproject-ui" 
 backend = "https://github.com/myorg/myproject/pkgs/container/myproject-backend"
@@ -141,18 +141,13 @@ database = "https://github.com/myorg/myproject/pkgs/container/myproject-database
 
 ## Development
 
-### Requirements
-
-- Python 3.9 or higher
-- Git
-
 ### Setup Development Environment
 
 Using uv (recommended):
 
 ```bash
-git clone https://github.com/it-at-m/tagger.git
-cd tagger
+git clone https://github.com/it-at-m/tag-version.git
+cd tag-version
 uv sync
 ```
 

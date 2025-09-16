@@ -1,5 +1,5 @@
 """
-Tests for the tagger package.
+Tests for the tag_version package.
 """
 
 import subprocess
@@ -19,7 +19,7 @@ from tag_version.core import (
 )
 
 
-# Test core functionality of the tagger package
+# Test core functionality of the tag_version package
 def test_filter_tags_by_prefix():
     """Test filtering tags by prefix"""
     tags = ["prefix-1.0.0", "other-2.0.0", "prefix-0.1.0"]

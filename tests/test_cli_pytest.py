@@ -1,5 +1,5 @@
 """
-Tests for the tagger CLI module.
+Tests for the tag_version CLI module.
 """
 
 from unittest.mock import patch

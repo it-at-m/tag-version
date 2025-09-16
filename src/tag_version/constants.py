@@ -1,5 +1,5 @@
 """
-Constants for the tagger package.
+Constants for the tag_version package.
 """
 
 # CLI Messages

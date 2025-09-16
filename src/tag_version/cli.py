@@ -1,5 +1,5 @@
 """
-Command Line Interface for the tagger package.
+Command Line Interface for the tag_version package.
 """
 
 import sys
@@ -93,7 +93,7 @@ def load_config() -> Dict:
     try:
         with open(config_path, "rb") as f:
             config = tomli.load(f)
-            return config.get("tool", {}).get("tagger", {})
+            return config.get("tool", {}).get("tag_version", {})
     except Exception:
         return {}
 
