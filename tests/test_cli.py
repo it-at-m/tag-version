@@ -1,0 +1,214 @@
+"""
+Tests for the tagger CLI module.
+"""
+
+import os
+import tempfile
+import pytest
+from unittest.mock import patch
+
+from click.testing import CliRunner
+
+from tagger_it_at_m.cli import main
+from tagger_it_at_m.cli import load_config
+
+
+@pytest.fixture
+def runner():
+    """Create CLI test runner"""
+    return CliRunner()
+
+
+def test_load_config():
+    """Test loading configuration directly"""
+    # Create a temporary pyproject.toml file
+    with tempfile.TemporaryDirectory() as temp_dir:
+        config_path = os.path.join(temp_dir, "pyproject.toml")
+        with open(config_path, "w") as f:
+            f.write("""
+[tool.tagger]
+services = ["test1", "test2"]
+prefix_format = "{service}-v"
+
+[tool.tagger.service_links]
+test1 = "https://example.com/test1"
+test2 = "https://example.com/test2"
+            """)
+        
+        # Change directory to test directory and load config
+        original_dir = os.getcwd()
+        try:
+            os.chdir(temp_dir)
+            config = load_config()
+            
+            # Verify config is loaded correctly
+            assert config.get("services") == ["test1", "test2"]
+            assert config.get("prefix_format") == "{service}-v"
+            assert config.get("service_links") == {
+                "test1": "https://example.com/test1",
+                "test2": "https://example.com/test2"
+            }
+        finally:
+            os.chdir(original_dir)
+    
+@patch('tagger_it_at_m.cli.get_git_tags')
+@patch('tagger_it_at_m.cli.create_git_tag')
+@patch('tagger_it_at_m.cli.load_config')
+def test_cli_with_arguments(mock_load_config, mock_create_tag, mock_get_tags, runner):
+    """Test CLI with command line arguments"""
+    # Mock config to use project prefix format
+    prefix_format = "myproject-{service}-"
+    mock_load_config.return_value = {
+        "services": ["service1", "service2"],
+        "prefix_format": prefix_format
+    }
+    
+    # Mock git tags with proper prefix
+    prefix = prefix_format.format(service="service1")
+    mock_get_tags.return_value = [f"{prefix}1.0.0", f"{prefix}0.9.0"]
+    mock_create_tag.return_value = True
+    
+    # Run with all parameters specified to avoid interaction
+    result = runner.invoke(
+        main,
+        ['--service', 'service1', '--version-type', 'patch', '--yes', '--no-push'],
+        catch_exceptions=False
+    )
+    
+    # Verify output
+    assert "Using prefix: myproject-service1-" in result.output
+    assert "Selected version type: patch" in result.output
+    assert f"Tag {prefix}1.0.1 created locally." in result.output
+    assert "The tag was created locally but could not be pushed" in result.output
+    
+    # Verify tag creation
+    mock_create_tag.assert_called_once_with(f"{prefix}1.0.1")
+    
+@patch('tagger_it_at_m.cli.get_git_tags')
+@patch('tagger_it_at_m.cli.create_git_tag')
+@patch('tagger_it_at_m.cli.push_git_tag')
+@patch('tagger_it_at_m.cli.load_config')
+def test_cli_with_push(mock_load_config, mock_push_tag, mock_create_tag, mock_get_tags, runner):
+    """Test CLI with tag pushing"""
+    # Mock config with project prefix format
+    prefix_format = "myproject-{service}-"
+    mock_load_config.return_value = {
+        "services": ["service1", "service2"],
+        "prefix_format": prefix_format
+    }
+    
+    # Mock git tags and functions
+    prefix = prefix_format.format(service="service1")
+    mock_get_tags.return_value = [f"{prefix}1.0.0"]
+    mock_create_tag.return_value = True
+    mock_push_tag.return_value = (True, "Tag pushed successfully")
+    
+    # Run with push
+    result = runner.invoke(
+        main,
+        ['--service', 'service1', '--version-type', 'minor', '--yes'],
+        catch_exceptions=False
+    )
+    
+    # Verify output
+    expected_tag = f"{prefix}1.1.0"
+    assert f"Tag {expected_tag} created locally." in result.output
+    assert "Pushing tag to origin..." in result.output
+    assert f"SUCCESS: Tag {expected_tag} pushed to origin." in result.output
+    
+    # Verify tag creation and pushing
+    mock_create_tag.assert_called_once_with(expected_tag)
+    mock_push_tag.assert_called_once_with(expected_tag)
+    
+@patch('tagger_it_at_m.cli.get_git_tags')
+@patch('tagger_it_at_m.cli.create_git_tag')
+@patch('tagger_it_at_m.cli.load_config')
+def test_cli_with_custom_prefix(mock_load_config, mock_create_tag, mock_get_tags, runner):
+    """Test CLI with custom prefix"""
+    # Mock config (not actually used for custom prefix)
+    mock_load_config.return_value = {}
+    
+    # Mock git tags
+    mock_get_tags.return_value = ["custom-prefix-0.5.0"]
+    mock_create_tag.return_value = True
+    
+    # Run with custom prefix
+    result = runner.invoke(
+        main,
+        ['--prefix', 'custom-prefix-', '--version-type', 'major', '--yes', '--no-push'],
+        catch_exceptions=False
+    )
+    
+    # Verify output
+    assert "Looking for tags with prefix: custom-prefix-" in result.output
+    assert "New version:     1.0.0" in result.output
+    assert "Tag custom-prefix-1.0.0 created locally." in result.output
+    
+    # Verify tag creation
+    mock_create_tag.assert_called_once_with("custom-prefix-1.0.0")
+    
+@patch('tagger_it_at_m.cli.get_git_tags')
+@patch('tagger_it_at_m.cli.load_config')
+def test_cli_with_no_existing_tags(mock_load_config, mock_get_tags, runner):
+    """Test CLI behavior when no existing tags are found"""
+    # Mock config with project prefix format
+    prefix_format = "myproject-{service}-"
+    mock_load_config.return_value = {
+        "services": ["new-service"],
+        "prefix_format": prefix_format
+    }
+    
+    # Mock empty git tags result
+    mock_get_tags.return_value = []
+    
+    with patch('tagger_it_at_m.cli.create_git_tag') as mock_create_tag:
+        mock_create_tag.return_value = True
+        
+        # Run with service specified
+        result = runner.invoke(
+            main,
+            ['--service', 'new-service', '--version-type', 'patch', '--yes', '--no-push'],
+            catch_exceptions=False
+        )
+        
+        # Verify output indicates no tags found and starting from 0.0.0
+        assert "Found no matching tags" in result.output
+        assert "No valid semantic version tags found" in result.output
+        assert "Current version: 0.0.0" in result.output
+        assert "New version:     0.0.1" in result.output
+        
+        # Verify tag creation starts at 0.0.1
+        expected_tag = f"{prefix_format.format(service='new-service')}0.0.1"
+        mock_create_tag.assert_called_once_with(expected_tag)
+    
+@patch('tagger_it_at_m.cli.create_git_tag')
+@patch('tagger_it_at_m.cli.load_config')
+def test_cli_create_tag_error(mock_load_config, mock_create_tag, runner):
+    """Test CLI handling of tag creation errors"""
+    # Mock config with project prefix format
+    prefix_format = "myproject-{service}-"
+    mock_load_config.return_value = {
+        "services": ["service1"],
+        "prefix_format": prefix_format
+    }
+    
+    # Generate the tag with proper prefix
+    prefix = prefix_format.format(service="service1")
+    tag = f"{prefix}1.0.1"
+    
+    # Mock error when creating tag
+    mock_create_tag.side_effect = RuntimeError(f"fatal: tag '{tag}' already exists")
+    
+    with patch('tagger_it_at_m.cli.get_git_tags') as mock_get_tags:
+        mock_get_tags.return_value = [f"{prefix}1.0.0"]
+        
+        # Run with service specified
+        result = runner.invoke(
+            main,
+            ['--service', 'service1', '--version-type', 'patch', '--yes', '--no-push'],
+            catch_exceptions=True
+        )
+        
+        # Verify error is handled
+        assert result.exit_code != 0
+        assert "Error creating tag:" in result.output
