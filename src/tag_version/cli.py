@@ -11,7 +11,7 @@ import click
 import colorama
 from colorama import Fore, Back, Style
 
-from tagger_it_at_m.constants import (
+from tag_version.constants import (
     CLI_AVAILABLE_SERVICES, CLI_SELECTED_SERVICE, CLI_INVALID_SELECTION_NUMBER, 
     CLI_INVALID_SERVICE_NAME, CLI_USING_PREFIX, CLI_ERROR_SERVICE_OR_PREFIX, 
     CLI_VERSION_INCREMENT_TYPE, CLI_VERSION_TYPE_MAJOR, CLI_VERSION_TYPE_MINOR, 
@@ -27,7 +27,7 @@ from tagger_it_at_m.constants import (
     CLI_TAG_NOT_PUSHED, CLI_OPERATION_CANCELLED
 )
 
-from tagger_it_at_m.core import (
+from tag_version.core import (
     get_git_tags, 
     filter_tags_by_prefix, 
     parse_version_tags,
@@ -253,7 +253,7 @@ def main(
             color=Fore.YELLOW + Back.RED
         )
         # Create a dummy version object
-        from tagger_it_at_m.core import VersionInfo
+        from tag_version.core import VersionInfo
         latest_version_obj = VersionInfo(
             tag=f"{prefix}0.0.0",
             version_string="0.0.0",

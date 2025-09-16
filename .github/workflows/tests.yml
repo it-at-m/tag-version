@@ -26,10 +26,10 @@ jobs:
         pip install -e .
     - name: Run tests
       run: |
-        python -m pytest --cov=src/tagger_it_at_m tests/
+        python -m pytest --cov=src/tag_version tests/
     - name: Generate coverage report
       run: |
-        python -m pytest --cov=src/tagger_it_at_m --cov-report=xml tests/
+        python -m pytest --cov=src/tag_version --cov-report=xml tests/
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:

@@ -308,7 +308,7 @@ wheels = [
 ]
 
 [[package]]
-name = "tag-version"
+name = "tag_version"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

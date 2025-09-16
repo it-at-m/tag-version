@@ -9,7 +9,7 @@ import tempfile
 import shutil
 import subprocess
 
-from tagger_it_at_m.core import (
+from tag_version.core import (
     get_git_tags,
     filter_tags_by_prefix,
     parse_version_tags,

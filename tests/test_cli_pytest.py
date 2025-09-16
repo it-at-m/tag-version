@@ -2,14 +2,12 @@
 Tests for the tagger CLI module.
 """
 
-import os
-import tempfile
 import pytest
 from unittest.mock import patch
 
 from click.testing import CliRunner
 
-from tagger_it_at_m.cli import main
+from tag_version.cli import main
 
 
 @pytest.fixture
@@ -18,7 +16,7 @@ def runner():
     return CliRunner()
 
 
-@patch('tagger_it_at_m.cli.load_config')
+@patch('tag_version.cli.load_config')
 def test_load_config(mock_load_config, runner):
     """Test loading configuration"""
     # In pytest mode, we need to mock the module import differently
@@ -46,9 +44,9 @@ def test_load_config(mock_load_config, runner):
     assert "Using prefix: myproject-service1-" in result.output
 
 
-@patch('tagger_it_at_m.cli.get_git_tags')
-@patch('tagger_it_at_m.cli.create_git_tag')
-@patch('tagger_it_at_m.cli.load_config')
+@patch('tag_version.cli.get_git_tags')
+@patch('tag_version.cli.create_git_tag')
+@patch('tag_version.cli.load_config')
 def test_cli_with_arguments(mock_load_config, mock_create_tag, mock_get_tags, runner):
     """Test CLI with command line arguments"""
     # Mock config to match expected prefix format
@@ -81,10 +79,10 @@ def test_cli_with_arguments(mock_load_config, mock_create_tag, mock_get_tags, ru
     mock_create_tag.assert_called_once_with("myproject-service1-1.0.1")
 
 
-@patch('tagger_it_at_m.cli.get_git_tags')
-@patch('tagger_it_at_m.cli.create_git_tag')
-@patch('tagger_it_at_m.cli.push_git_tag')
-@patch('tagger_it_at_m.cli.load_config')
+@patch('tag_version.cli.get_git_tags')
+@patch('tag_version.cli.create_git_tag')
+@patch('tag_version.cli.push_git_tag')
+@patch('tag_version.cli.load_config')
 def test_cli_with_push(mock_load_config, mock_push_tag, mock_create_tag, mock_get_tags, runner):
     """Test CLI with tag pushing"""
     # Mock config with expected prefix format
@@ -117,9 +115,9 @@ def test_cli_with_push(mock_load_config, mock_push_tag, mock_create_tag, mock_ge
     mock_push_tag.assert_called_once_with("myproject-service1-1.1.0")
 
 
-@patch('tagger_it_at_m.cli.get_git_tags')
-@patch('tagger_it_at_m.cli.create_git_tag')
-@patch('tagger_it_at_m.cli.load_config')
+@patch('tag_version.cli.get_git_tags')
+@patch('tag_version.cli.create_git_tag')
+@patch('tag_version.cli.load_config')
 def test_cli_with_custom_prefix(mock_load_config, mock_create_tag, mock_get_tags, runner):
     """Test CLI with custom prefix"""
     # Mock config (not actually used for custom prefix)
@@ -145,8 +143,8 @@ def test_cli_with_custom_prefix(mock_load_config, mock_create_tag, mock_get_tags
     mock_create_tag.assert_called_once_with("custom-prefix-1.0.0")
 
 
-@patch('tagger_it_at_m.cli.get_git_tags')
-@patch('tagger_it_at_m.cli.load_config')
+@patch('tag_version.cli.get_git_tags')
+@patch('tag_version.cli.load_config')
 def test_cli_with_no_existing_tags(mock_load_config, mock_get_tags, runner):
     """Test CLI behavior when no existing tags are found"""
     # Mock config with expected prefix format
@@ -159,7 +157,7 @@ def test_cli_with_no_existing_tags(mock_load_config, mock_get_tags, runner):
     # Mock empty git tags result
     mock_get_tags.return_value = []
     
-    with patch('tagger_it_at_m.cli.create_git_tag') as mock_create_tag:
+    with patch('tag_version.cli.create_git_tag') as mock_create_tag:
         mock_create_tag.return_value = True
         
         # Run with service specified
@@ -179,8 +177,8 @@ def test_cli_with_no_existing_tags(mock_load_config, mock_get_tags, runner):
         mock_create_tag.assert_called_once_with("myproject-new-service-0.0.1")
 
 
-@patch('tagger_it_at_m.cli.create_git_tag')
-@patch('tagger_it_at_m.cli.load_config')
+@patch('tag_version.cli.create_git_tag')
+@patch('tag_version.cli.load_config')
 def test_cli_create_tag_error(mock_load_config, mock_create_tag, runner):
     """Test CLI handling of tag creation errors"""
     # Mock config to use simple prefix format
@@ -192,7 +190,7 @@ def test_cli_create_tag_error(mock_load_config, mock_create_tag, runner):
     # Mock error when creating tag
     mock_create_tag.side_effect = RuntimeError("fatal: tag 'service1-1.0.1' already exists")
     
-    with patch('tagger_it_at_m.cli.get_git_tags') as mock_get_tags:
+    with patch('tag_version.cli.get_git_tags') as mock_get_tags:
         mock_get_tags.return_value = ["service1-1.0.0"]
         
         # Run with service specified

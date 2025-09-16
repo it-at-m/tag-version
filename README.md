@@ -1,4 +1,4 @@
-# tag-version
+# tag_version
 [![Made with love by it@M][made-with-love-shield]][itm-opensource]
 <!-- feel free to add more shields, style 'for-the-badge' -> see https://shields.io/badges -->
 
@@ -27,13 +27,13 @@ A Python package for managing Git version tags using semantic versioning per com
 ### Using pip
 
 ```bash
-pip install tag-version
+pip install tag_version
 ```
 
 ### Using uv (recommended)
 
 ```bash
-uv add tag-version
+uv add tag_version
 ```
 
 ### From source
@@ -169,7 +169,7 @@ uv run pytest
 uv run pytest -v
 
 # Run tests with coverage report
-uv run pytest --cov=tagger_it_at_m
+uv run pytest --cov=tag_version
 
 # Run specific test files
 uv run pytest tests/test_tagger.py

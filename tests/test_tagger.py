@@ -7,7 +7,7 @@ import subprocess
 import pytest
 from unittest.mock import patch, MagicMock, call
 
-from tagger_it_at_m.core import (
+from tag_version.core import (
     get_git_tags,
     filter_tags_by_prefix,
     parse_version_tags,
@@ -17,7 +17,7 @@ from tagger_it_at_m.core import (
     push_git_tag,
     VersionInfo
 )
-from tagger_it_at_m.constants import CORE_GIT_TAG_ERROR
+from tag_version.constants import CORE_GIT_TAG_ERROR
 
 
 # Test core functionality of the tagger package

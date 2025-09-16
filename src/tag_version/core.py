@@ -7,7 +7,7 @@ import subprocess
 from dataclasses import dataclass
 from typing import List, Optional, Tuple
 
-from tagger_it_at_m.constants import CORE_GIT_TAG_ERROR
+from tag_version.constants import CORE_GIT_TAG_ERROR
 
 
 @dataclass

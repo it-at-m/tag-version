@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tag-version"
+name = "tag_version"
 version = "0.1.0"
 authors = [
     { name = "Michael Jaumann", email = "michael.jaumann@muenchen.de" },
@@ -37,8 +37,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/it-at-m/tag-version"
-Issues = "https://github.com/it-at-m/tag-version/issues"
+Homepage = "https://github.com/it-at-m/tag_version"
+Issues = "https://github.com/it-at-m/tag_version/issues"
 
 
 
@@ -61,7 +61,7 @@ database = "https://github.com/myorg/myproject/pkgs/container/myproject-database
 where = ["src"]
 
 [project.scripts]
-tagger = "tagger_it_at_m.cli:main"
+tag-version = "tag_version.cli:main"
 
 [[tool.uv.index]]
 name = "pypy"
@@ -82,7 +82,7 @@ python_functions = "test_*"
 python_classes = "Test*"
 
 [tool.coverage.run]
-source = ["tagger_it_at_m"]
+source = ["tag_version"]
 omit = ["tests/*", "setup.py"]
 
 [tool.coverage.report]
