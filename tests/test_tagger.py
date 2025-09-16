@@ -6,6 +6,7 @@ import subprocess
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from tag_version.constants import CORE_GIT_TAG_ERROR
 from tag_version.core import (
     VersionInfo,

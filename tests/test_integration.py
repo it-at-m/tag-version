@@ -9,6 +9,7 @@ import tempfile
 from unittest.mock import MagicMock, patch
 
 import pytest
+
 from tag_version.core import (
     VersionInfo,
     create_git_tag,

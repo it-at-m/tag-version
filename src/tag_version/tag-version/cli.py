@@ -4,12 +4,13 @@ Command Line Interface for the tag_version package.
 
 import sys
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Optional
 
 import click
 import colorama
 import tomli
 from colorama import Back, Fore, Style
+
 from tag_version.constants import (
     CLI_AVAILABLE_SERVICES,
     CLI_CHECK_PERMISSIONS,
@@ -66,7 +67,7 @@ from tag_version.core import (
 colorama.init(autoreset=True)
 
 
-def load_config() -> Dict:
+def load_config() -> dict:
     """
     Load configuration from pyproject.toml file.
     Looks for the file in the current directory and parent directories.

@@ -6,6 +6,7 @@ from unittest.mock import patch
 
 import pytest
 from click.testing import CliRunner
+
 from tag_version.cli import main
 
 

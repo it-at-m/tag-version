@@ -5,7 +5,7 @@ Core functionality for the tagger package.
 import re
 import subprocess
 from dataclasses import dataclass
-from typing import List, Optional, Tuple
+from typing import Optional
 
 from tag_version.constants import CORE_GIT_TAG_ERROR
 
@@ -21,7 +21,7 @@ class VersionInfo:
     patch: int
 
 
-def get_git_tags() -> List[str]:
+def get_git_tags() -> list[str]:
     """Get all git tags in the current repository"""
     try:
         result = subprocess.run(
@@ -34,12 +34,12 @@ def get_git_tags() -> List[str]:
         return []
 
 
-def filter_tags_by_prefix(tags: List[str], prefix: str) -> List[str]:
+def filter_tags_by_prefix(tags: list[str], prefix: str) -> list[str]:
     """Filter tags that start with the specified prefix"""
     return [tag for tag in tags if tag.startswith(prefix)]
 
 
-def parse_version_tags(tags: List[str], prefix: str) -> List[VersionInfo]:
+def parse_version_tags(tags: list[str], prefix: str) -> list[VersionInfo]:
     """Parse version tags into structured version objects"""
     version_objects = []
     for tag in tags:
@@ -62,7 +62,7 @@ def parse_version_tags(tags: List[str], prefix: str) -> List[VersionInfo]:
     return version_objects
 
 
-def get_latest_version(versions: List[VersionInfo]) -> Optional[VersionInfo]:
+def get_latest_version(versions: list[VersionInfo]) -> Optional[VersionInfo]:
     """Get the highest version from a list of versions"""
     if not versions:
         return None
@@ -75,7 +75,7 @@ def get_latest_version(versions: List[VersionInfo]) -> Optional[VersionInfo]:
     return sorted_versions[0]
 
 
-def increment_version(version: VersionInfo, version_type: str) -> Tuple[str, str]:
+def increment_version(version: VersionInfo, version_type: str) -> tuple[str, str]:
     """
     Increment the version according to semantic versioning
 
@@ -120,7 +120,7 @@ def create_git_tag(tag: str) -> bool:
         )
 
 
-def push_git_tag(tag: str) -> Tuple[bool, str]:
+def push_git_tag(tag: str) -> tuple[bool, str]:
     """Push git tag to remote repository"""
     try:
         result = subprocess.run(
