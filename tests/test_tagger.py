@@ -122,12 +122,43 @@ def test_parse_version_tags_with_invalid_tags():
 
 @patch("subprocess.run")
 def test_create_git_tag_success(mock_run):
-    """Test successfully creating a git tag"""
+    """Test successfully creating a lightweight git tag"""
     mock_process = MagicMock()
     mock_process.returncode = 0
     mock_run.return_value = mock_process
 
     result = create_git_tag("service-1.0.0")
+    assert result is True
+    mock_run.assert_called_once_with(
+        ["git", "tag", "service-1.0.0"], check=True, capture_output=True, text=True
+    )
+
+
+@patch("subprocess.run")
+def test_create_git_tag_annotated_success(mock_run):
+    """Test successfully creating an annotated git tag"""
+    mock_process = MagicMock()
+    mock_process.returncode = 0
+    mock_run.return_value = mock_process
+
+    result = create_git_tag("service-1.0.0", "Release version 1.0.0")
+    assert result is True
+    mock_run.assert_called_once_with(
+        ["git", "tag", "-a", "service-1.0.0", "-m", "Release version 1.0.0"],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+
+@patch("subprocess.run")
+def test_create_git_tag_empty_message(mock_run):
+    """Test creating a lightweight tag when message is empty string"""
+    mock_process = MagicMock()
+    mock_process.returncode = 0
+    mock_run.return_value = mock_process
+
+    result = create_git_tag("service-1.0.0", "")
     assert result is True
     mock_run.assert_called_once_with(
         ["git", "tag", "service-1.0.0"], check=True, capture_output=True, text=True

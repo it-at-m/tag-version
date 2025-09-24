@@ -104,7 +104,7 @@ def increment_version(version: VersionInfo, version_type: str) -> tuple[str, str
 
     new_version = f"{major}.{minor}.{patch}"
     if version.tag.endswith(version.version_string):
-        prefix = version.tag[:-len(version.version_string)]
+        prefix = version.tag[: -len(version.version_string)]
     else:
         # Fallback, though this shouldn't happen with valid VersionInfo
         prefix = version.tag.replace(version.version_string, "", 1)
@@ -113,10 +113,33 @@ def increment_version(version: VersionInfo, version_type: str) -> tuple[str, str
     return new_version, new_tag
 
 
-def create_git_tag(tag: str) -> bool:
-    """Create a new git tag"""
+def create_git_tag(tag: str, message: Optional[str] = None) -> bool:
+    """Create a new git tag (lightweight or annotated)
+
+    Args:
+        tag: The tag name to create
+        message: Optional message for annotated tag. If None, creates lightweight tag.
+
+    Returns:
+        True if tag creation was successful
+
+    Raises:
+        RuntimeError: If tag creation fails
+    """
     try:
-        subprocess.run(["git", "tag", tag], check=True, capture_output=True, text=True)
+        if message:
+            # Create annotated tag with message
+            subprocess.run(
+                ["git", "tag", "-a", tag, "-m", message],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+        else:
+            # Create lightweight tag
+            subprocess.run(
+                ["git", "tag", tag], check=True, capture_output=True, text=True
+            )
         return True
     except subprocess.CalledProcessError as e:
         error_message = e.stderr if e.stderr else str(e)

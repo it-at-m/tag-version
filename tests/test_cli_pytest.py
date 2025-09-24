@@ -74,7 +74,7 @@ def test_cli_with_arguments(mock_load_config, mock_create_tag, mock_get_tags, ru
     assert "The tag was created locally but could not be pushed" in result.output
 
     # Verify tag creation
-    mock_create_tag.assert_called_once_with("myproject-service1-1.0.1")
+    mock_create_tag.assert_called_once_with("myproject-service1-1.0.1", None)
 
 
 @patch("tag_version.cli.get_git_tags")
@@ -111,7 +111,7 @@ def test_cli_with_push(
     assert "SUCCESS: Tag myproject-service1-1.1.0 pushed to origin." in result.output
 
     # Verify tag creation and pushing
-    mock_create_tag.assert_called_once_with("myproject-service1-1.1.0")
+    mock_create_tag.assert_called_once_with("myproject-service1-1.1.0", None)
     mock_push_tag.assert_called_once_with("myproject-service1-1.1.0")
 
 
@@ -142,7 +142,7 @@ def test_cli_with_custom_prefix(
     assert "Tag custom-prefix-1.0.0 created locally." in result.output
 
     # Verify tag creation
-    mock_create_tag.assert_called_once_with("custom-prefix-1.0.0")
+    mock_create_tag.assert_called_once_with("custom-prefix-1.0.0", None)
 
 
 @patch("tag_version.cli.get_git_tags")
@@ -183,7 +183,7 @@ def test_cli_with_no_existing_tags(mock_load_config, mock_get_tags, runner):
         assert "New version:     0.0.1" in result.output
 
         # Verify tag creation starts at 0.0.1
-        mock_create_tag.assert_called_once_with("myproject-new-service-0.0.1")
+        mock_create_tag.assert_called_once_with("myproject-new-service-0.0.1", None)
 
 
 @patch("tag_version.cli.create_git_tag")

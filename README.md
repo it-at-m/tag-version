@@ -8,12 +8,16 @@ A Python package for managing Git version tags using semantic versioning per com
 ## Features
 
 - Create semantic version tags (`major.minor.patch`)
+- Support for both lightweight and annotated Git tags
+  - Interactive prompts for tag messages
+  - Command-line option for annotated tags with custom messages
 - Native git interaction
   - Automatic detection of the latest version
   - Git tag creation and pushing to remote repositories
 - Nice to use
   - Interactive service selection and version type input
   - Colorful terminal output for better user experience
+  - Visual indicators for tag types (annotated vs lightweight)
 - Easy to configure
   - Configurable services and prefix format via pyproject.toml
   - Support for custom tag prefixes
@@ -82,6 +86,8 @@ Options:
                                  Version increment type (major, minor, patch)
   -p, --prefix TEXT              Custom prefix for the tag (overrides the 
                                  configured prefix_format)
+  -m, --message TEXT             Message for annotated tag (creates lightweight 
+                                 tag if not provided)
   -y, --yes                      Skip confirmation prompts and automatically 
                                  proceed
   --services-list TEXT           Comma-separated list of available services 
@@ -96,6 +102,12 @@ Options:
 
 ```bash
 tag-version -s frontend -t patch
+```
+
+### Create an annotated tag with a custom message
+
+```bash
+tag-version -s frontend -t minor --message "Release v2.1.0 with new features and bug fixes"
 ```
 
 ### Create a major version with a custom prefix
@@ -114,6 +126,55 @@ tag-version --service core --version-type minor --yes
 
 ```bash
 tag-version --services-list "api,ui,database" --service api --version-type minor
+```
+
+### Interactive annotated tag creation
+
+When running without the `--message` option and `--yes` flag, the tool will prompt you:
+
+```bash
+tag-version -s frontend -t patch
+# Will ask: "Do you want to create an annotated tag with a message? [y/N]:"
+# If yes, will prompt: "Enter the tag message (optional, press Enter for lightweight tag):"
+```
+
+## Tag Types
+
+`tag-version` supports both lightweight and annotated Git tags:
+
+### Lightweight Tags
+
+- Created by default when no message is provided
+- Simple pointers to specific commits
+- Faster to create and require less storage
+- Use cases: temporary tags, simple version marking
+
+### Annotated Tags
+
+- Created when a message is provided via `--message` or interactive prompt
+- Store additional metadata (tagger name, email, date, message)
+- Recommended for release tags and important milestones
+- Use cases: release versions, changelog documentation
+
+### Tag Type Examples
+
+**Create a lightweight tag:**
+
+```bash
+tag-version -s api -t patch --yes
+```
+
+**Create an annotated tag:**
+
+```bash
+tag-version -s api -t patch --message "Fix critical bug in authentication"
+```
+
+**Interactive mode (will prompt for message):**
+
+```bash
+tag-version -s api -t patch
+# Prompts: "Do you want to create an annotated tag with a message?"
 ```
 
 ## Configuration

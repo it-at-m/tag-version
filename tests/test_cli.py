@@ -82,7 +82,7 @@ def test_cli_with_arguments(mock_load_config, mock_create_tag, mock_get_tags, ru
     assert "The tag was created locally but could not be pushed" in result.output
 
     # Verify tag creation
-    mock_create_tag.assert_called_once_with(f"{prefix}1.0.1")
+    mock_create_tag.assert_called_once_with(f"{prefix}1.0.1", None)
 
 
 @patch("tag_version.cli.get_git_tags")
@@ -120,7 +120,7 @@ def test_cli_with_push(
     assert f"SUCCESS: Tag {expected_tag} pushed to origin." in result.output
 
     # Verify tag creation and pushing
-    mock_create_tag.assert_called_once_with(expected_tag)
+    mock_create_tag.assert_called_once_with(expected_tag, None)
     mock_push_tag.assert_called_once_with(expected_tag)
 
 
@@ -151,7 +151,7 @@ def test_cli_with_custom_prefix(
     assert "Tag custom-prefix-1.0.0 created locally." in result.output
 
     # Verify tag creation
-    mock_create_tag.assert_called_once_with("custom-prefix-1.0.0")
+    mock_create_tag.assert_called_once_with("custom-prefix-1.0.0", None)
 
 
 @patch("tag_version.cli.get_git_tags")
@@ -193,7 +193,7 @@ def test_cli_with_no_existing_tags(mock_load_config, mock_get_tags, runner):
 
         # Verify tag creation starts at 0.0.1
         expected_tag = f"{prefix_format.format(service='new-service')}0.0.1"
-        mock_create_tag.assert_called_once_with(expected_tag)
+        mock_create_tag.assert_called_once_with(expected_tag, None)
 
 
 @patch("tag_version.cli.create_git_tag")
@@ -227,3 +227,84 @@ def test_cli_create_tag_error(mock_load_config, mock_create_tag, runner):
         # Verify error is handled
         assert result.exit_code != 0
         assert "Error creating tag:" in result.output
+
+
+@patch("tag_version.cli.get_git_tags")
+@patch("tag_version.cli.create_git_tag")
+@patch("tag_version.cli.load_config")
+def test_cli_with_message_parameter(
+    mock_load_config, mock_create_tag, mock_get_tags, runner
+):
+    """Test CLI with message parameter for annotated tags"""
+    # Mock config
+    prefix_format = "myproject-{service}-"
+    mock_load_config.return_value = {
+        "services": ["service1"],
+        "prefix_format": prefix_format,
+    }
+
+    # Mock git tags
+    prefix = prefix_format.format(service="service1")
+    mock_get_tags.return_value = [f"{prefix}1.0.0"]
+    mock_create_tag.return_value = True
+
+    # Run with message parameter
+    test_message = "Release version 1.0.1 with new features"
+    result = runner.invoke(
+        main,
+        [
+            "--service",
+            "service1",
+            "--version-type",
+            "patch",
+            "--message",
+            test_message,
+            "--yes",
+            "--no-push",
+        ],
+        catch_exceptions=False,
+    )
+
+    # Verify output
+    expected_tag = f"{prefix}1.0.1"
+    assert f"Message:         {test_message}" in result.output
+    assert "Creating annotated tag with message" in result.output
+    assert f"Tag {expected_tag} created locally." in result.output
+
+    # Verify tag creation with message
+    mock_create_tag.assert_called_once_with(expected_tag, test_message)
+
+
+@patch("tag_version.cli.get_git_tags")
+@patch("tag_version.cli.create_git_tag")
+@patch("tag_version.cli.load_config")
+def test_cli_without_message_shows_lightweight_info(
+    mock_load_config, mock_create_tag, mock_get_tags, runner
+):
+    """Test CLI without message shows lightweight tag info"""
+    # Mock config
+    prefix_format = "myproject-{service}-"
+    mock_load_config.return_value = {
+        "services": ["service1"],
+        "prefix_format": prefix_format,
+    }
+
+    # Mock git tags
+    prefix = prefix_format.format(service="service1")
+    mock_get_tags.return_value = [f"{prefix}1.0.0"]
+    mock_create_tag.return_value = True
+
+    # Run without message parameter
+    result = runner.invoke(
+        main,
+        ["--service", "service1", "--version-type", "patch", "--yes", "--no-push"],
+        catch_exceptions=False,
+    )
+
+    # Verify output shows lightweight tag info
+    expected_tag = f"{prefix}1.0.1"
+    assert "Creating lightweight tag (no message provided)" in result.output
+    assert f"Tag {expected_tag} created locally." in result.output
+
+    # Verify tag creation without message
+    mock_create_tag.assert_called_once_with(expected_tag, None)

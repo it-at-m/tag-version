@@ -12,6 +12,8 @@ import tomli
 from colorama import Back, Fore, Style
 
 from tag_version.constants import (
+    CLI_ANNOTATED_TAG_INFO,
+    CLI_ANNOTATED_TAG_PROMPT,
     CLI_AVAILABLE_SERVICES,
     CLI_CHECK_PERMISSIONS,
     CLI_CURRENT_VERSION,
@@ -25,6 +27,7 @@ from tag_version.constants import (
     CLI_INVALID_SELECTION_NUMBER,
     CLI_INVALID_SERVICE_NAME,
     CLI_INVALID_VERSION_TYPE,
+    CLI_LIGHTWEIGHT_TAG_INFO,
     CLI_LOOKING_FOR_PREFIX,
     CLI_NEW_TAG,
     CLI_NEW_VERSION,
@@ -42,6 +45,8 @@ from tag_version.constants import (
     CLI_SUMMARY_SEPARATOR,
     CLI_TAG_CREATED_LOCALLY,
     CLI_TAG_LOCALLY_NOT_PUSHED,
+    CLI_TAG_MESSAGE_LINE,
+    CLI_TAG_MESSAGE_PROMPT,
     CLI_TAG_NOT_PUSHED,
     CLI_USING_PREFIX,
     CLI_VALID_VERSIONS_FOUND,
@@ -134,6 +139,12 @@ def print_color(message: str, color: str = Fore.WHITE, end="\n"):
     help="Custom prefix for the tag (overrides the configured format)",
 )
 @click.option(
+    "--message",
+    "-m",
+    type=click.STRING,
+    help="Message for annotated tag (creates lightweight tag if not provided)",
+)
+@click.option(
     "--yes",
     "-y",
     is_flag=True,
@@ -149,6 +160,7 @@ def main(
     service: Optional[str],
     version_type: Optional[str],
     prefix: Optional[str],
+    message: Optional[str],
     yes: bool,
     services_list: Optional[str],
     no_push: bool,
@@ -296,6 +308,16 @@ def main(
     # Increment version according to the selected version type
     new_version, new_tag = increment_version(latest_version_obj, version_type)
 
+    # Handle tag message for annotated tags
+    if not message and not yes:
+        # Ask if user wants to create an annotated tag with a message
+        if click.confirm(CLI_ANNOTATED_TAG_PROMPT, default=False):
+            message = click.prompt(
+                CLI_TAG_MESSAGE_PROMPT, default="", show_default=False
+            )
+            if not message.strip():
+                message = None
+
     # Show summary and confirm
     print_color(CLI_VERSION_UPDATE_SUMMARY, color=Fore.CYAN)
     if service:
@@ -305,6 +327,11 @@ def main(
     )
     print_color(CLI_NEW_VERSION.format(new_version), color=Fore.GREEN)
     print_color(CLI_NEW_TAG.format(new_tag), color=Fore.GREEN)
+    if message:
+        print_color(CLI_TAG_MESSAGE_LINE.format(message), color=Fore.CYAN)
+        print_color(CLI_ANNOTATED_TAG_INFO, color=Fore.CYAN)
+    else:
+        print_color(CLI_LIGHTWEIGHT_TAG_INFO, color=Fore.YELLOW)
     print_color(CLI_SUMMARY_SEPARATOR, color=Fore.CYAN)
 
     # Confirm action
@@ -314,9 +341,9 @@ def main(
 
     # Create the tag
     try:
-        create_git_tag(new_tag)
+        create_git_tag(new_tag, message)
         print_color(CLI_TAG_CREATED_LOCALLY.format(new_tag), color=Fore.GREEN)
-    except RuntimeError  as e:
+    except RuntimeError as e:
         print_color(CLI_ERROR_CREATING_TAG.format(str(e)), color=Fore.RED)
         print_color(CLI_FAILED_TO_CREATE_TAG, color=Fore.RED)
         sys.exit(1)

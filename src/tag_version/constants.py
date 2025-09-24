@@ -51,6 +51,13 @@ CLI_CHECK_PERMISSIONS = (
 CLI_PUSH_LATER = "To push later, use: git push origin {}"
 CLI_TAG_NOT_PUSHED = "Tag was created locally but not pushed."
 CLI_OPERATION_CANCELLED = "Operation cancelled."
+CLI_ANNOTATED_TAG_PROMPT = "Do you want to create an annotated tag with a message?"
+CLI_TAG_MESSAGE_PROMPT = (
+    "Enter the tag message (optional, press Enter for lightweight tag):"
+)
+CLI_TAG_MESSAGE_LINE = "Message:         {}"
+CLI_LIGHTWEIGHT_TAG_INFO = "Creating lightweight tag (no message provided)"
+CLI_ANNOTATED_TAG_INFO = "Creating annotated tag with message"
 
 # Core messages
 CORE_GIT_TAG_ERROR = (
