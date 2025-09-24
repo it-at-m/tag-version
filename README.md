@@ -1,54 +1,234 @@
-## Customize this file after creating the new REPO and remove this lines.
-What to adjust:  
-* Add the your project or repo name direct under the logo.
-* Add a short and long desciption.
-* Add links for your final repo to report a bug or request a feature.
-* Add list of used technologies.
-* If you have, add a roadmap or remove this section.
-* Fill up the section for set up and documentation.
- * Start in this file only with documentation and link to the docs folder.
-* Add more project shields. Use [shields.io](https://shields.io/) with style `for-the-badge`.
-
-## ------- end to remove -------
-<!-- add Project Logo, if existing -->
-
-# repo or project name
+# tag_version
 
 [![Made with love by it@M][made-with-love-shield]][itm-opensource]
 <!-- feel free to add more shields, style 'for-the-badge' -> see https://shields.io/badges -->
 
-*Add a description from your project here.*
+A Python package for managing Git version tags using semantic versioning per command line.
 
+## Features
+
+- Create semantic version tags (`major.minor.patch`)
+- Support for both lightweight and annotated Git tags
+  - Interactive prompts for tag messages
+  - Command-line option for annotated tags with custom messages
+- Native git interaction
+  - Automatic detection of the latest version
+  - Git tag creation and pushing to remote repositories
+- Nice to use
+  - Interactive service selection and version type input
+  - Colorful terminal output for better user experience
+  - Visual indicators for tag types (annotated vs lightweight)
+- Easy to configure
+  - Configurable services and prefix format via pyproject.toml
+  - Support for custom tag prefixes
 
 ### Built With
 
-The documentation project is built with technologies we use in our projects:
-
-* *write here the list of used technologies*
-
-## Roadmap
-
-*if you have a ROADMAP for your project add this here*
-
-
-See the [open issues](#) for a full list of proposed features (and known issues).
-
+- uv
 
 ## Set up
-*how can i start and fly this project*
 
-## Documentation
-*what insights do you have to tell*
+### Using pip
 
-```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
+```bash
+pip install tag_version
 ```
 
-use [diagrams](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams).
+### Using uv (recommended)
+
+```bash
+uv add tag_version
+```
+
+### From source
+
+```bash
+git clone https://github.com/it-at-m/tag-version.git
+cd tag-version
+pip install .
+```
+
+## Usage
+
+### Interactive Mode
+
+Simply run the command without parameters for interactive prompts:
+
+```bash
+tag-version
+```
+
+With uv:
+
+```bash
+uv run tag-version
+```
+
+### Basic Usage
+
+```bash
+tag-version --service frontend --version-type patch 
+```
+
+When using uv:
+
+```bash
+uv run tag-version --service frontend --version-type patch
+```
+
+### Command Line Options
+
+```bash
+Options:
+  -s, --service TEXT             Service to tag (frontend, core, assistant, 
+                                 assistant-migrations)
+  -t, --version-type [major|minor|patch]
+                                 Version increment type (major, minor, patch)
+  -p, --prefix TEXT              Custom prefix for the tag (overrides the 
+                                 configured prefix_format)
+  -m, --message TEXT             Message for annotated tag (creates lightweight 
+                                 tag if not provided)
+  -y, --yes                      Skip confirmation prompts and automatically 
+                                 proceed
+  --services-list TEXT           Comma-separated list of available services 
+                                 (overrides defaults)
+  --no-push                      Don't push the tag to remote repository
+  --help                         Show this message and exit
+```
+
+## Examples
+
+### Create a patch version for the frontend service
+
+```bash
+tag-version -s frontend -t patch
+```
+
+### Create an annotated tag with a custom message
+
+```bash
+tag-version -s frontend -t minor --message "Release v2.1.0 with new features and bug fixes"
+```
+
+### Create a major version with a custom prefix
+
+```bash
+tag-version --prefix custom-project- --version-type major
+```
+
+### Non-interactive mode with automatic confirmation
+
+```bash
+tag-version --service core --version-type minor --yes
+```
+
+### Use custom services list
+
+```bash
+tag-version --services-list "api,ui,database" --service api --version-type minor
+```
+
+### Interactive annotated tag creation
+
+When running without the `--message` option and `--yes` flag, the tool will prompt you:
+
+```bash
+tag-version -s frontend -t patch
+# Will ask: "Do you want to create an annotated tag with a message? [y/N]:"
+# If yes, will prompt: "Enter the tag message (optional, press Enter for lightweight tag):"
+```
+
+## Tag Types
+
+`tag-version` supports both lightweight and annotated Git tags:
+
+### Lightweight Tags
+
+- Created by default when no message is provided
+- Simple pointers to specific commits
+- Faster to create and require less storage
+- Use cases: temporary tags, simple version marking
+
+### Annotated Tags
+
+- Created when a message is provided via `--message` or interactive prompt
+- Store additional metadata (tagger name, email, date, message)
+- Recommended for release tags and important milestones
+- Use cases: release versions, changelog documentation
+
+### Tag Type Examples
+
+**Create a lightweight tag:**
+
+```bash
+tag-version -s api -t patch --yes
+```
+
+**Create an annotated tag:**
+
+```bash
+tag-version -s api -t patch --message "Fix critical bug in authentication"
+```
+
+**Interactive mode (will prompt for message):**
+
+```bash
+tag-version -s api -t patch
+# Prompts: "Do you want to create an annotated tag with a message?"
+```
+
+## Configuration
+
+`tag-version` can be configured via the `pyproject.toml` file. Add a `[tag_version]` section with the following options:
+
+```toml
+[tool.tag_version]
+# List of available services
+services = ["api", "ui", "backend", "database"]
+
+# Format for tag prefixes - {service} will be replaced with the service name
+prefix_format = "myproject-{service}-"
+
+# Links to service resources shown after successful tag push
+[tool.tag_version.service_links]
+api = "https://github.com/myorg/myproject/pkgs/container/myproject-api"
+ui = "https://github.com/myorg/myproject/pkgs/container/myproject-ui" 
+backend = "https://github.com/myorg/myproject/pkgs/container/myproject-backend"
+database = "https://github.com/myorg/myproject/pkgs/container/myproject-database"
+```
+
+## Development
+
+### Setup Development Environment
+
+Using uv (recommended):
+
+```bash
+git clone https://github.com/it-at-m/tag-version.git
+cd tag-version
+uv sync
+```
+
+### Running Tests
+
+The project uses pytest for testing. You can run the tests using:
+
+```bash
+# Run all tests
+uv run pytest
+
+# Run tests with verbose output
+uv run pytest -v
+
+# Run tests with coverage report
+uv run pytest --cov=tag_version
+
+# Run specific test files
+uv run pytest tests/test_tagger.py
+
+# Run a specific test function
+uv run pytest tests/test_tagger.py::test_filter_tags_by_prefix
+```
 
 ## Contributing
 
@@ -66,15 +246,13 @@ Don't forget to give the project a star! Thanks again!
 
 More about this in the [CODE_OF_CONDUCT](/CODE_OF_CONDUCT.md) file.
 
-
 ## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) file for more information.
 
-
 ## Contact
 
-it@M - opensource@muenchen.de
+it@M - <opensource@muenchen.de>
 
 <!-- project shields / links -->
 [made-with-love-shield]: https://img.shields.io/badge/made%20with%20%E2%9D%A4%20by-it%40M-yellow?style=for-the-badge

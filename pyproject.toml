@@ -1,0 +1,96 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tag_version"
+version = "0.1.0"
+authors = [
+    { name = "Michael Jaumann", email = "michael.jaumann@muenchen.de" },
+    { name = "ITM KICC", email = "itm.kicc@muenchen.de" },
+]
+description = "Git version tagging utility for semantic versioning"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Version Control :: Git",
+]
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+dependencies = [
+    "click>=8.0.0",
+    "colorama>=0.4.4",
+    "gitpython>=3.1.0",
+    "tomli>=2.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.404",
+    "pytest>=8.3.5",
+    "ruff==0.12.10",
+    "pre-commit>=4.2.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/it-at-m/tag-version"
+Issues = "https://github.com/it-at-m/tag-version/issues"
+
+
+
+[tool.tag_version]
+# List of available services
+services = ["api", "ui", "backend", "database"]
+
+# Format for tag prefixes - {service} will be replaced with the service name
+prefix_format = "myproject-{service}-"
+
+# Links to service resources shown after successful tag push
+[tool.tag_version.service_links]
+api = "https://github.com/myorg/myproject/pkgs/container/myproject-api"
+ui = "https://github.com/myorg/myproject/pkgs/container/myproject-ui"
+backend = "https://github.com/myorg/myproject/pkgs/container/myproject-backend"
+database = "https://github.com/myorg/myproject/pkgs/container/myproject-database"
+
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+tag-version = "tag_version.cli:main"
+
+[[tool.uv.index]]
+name = "pypy"
+url = "https://pypi.org/simple"
+
+[tool.ruff]
+target-version = "py39"
+src = ["src/"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = ["E501", "E701"] # line too long, multiple statements on one line
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
+python_classes = "Test*"
+
+[tool.coverage.run]
+source = ["tag_version"]
+omit = ["tests/*", "setup.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "pass",
+    "raise ImportError",
+]
