@@ -99,9 +99,15 @@ def increment_version(version: VersionInfo, version_type: str) -> tuple[str, str
         patch = 0
     elif version_type == "patch":
         patch += 1
+    else:
+        raise ValueError(f"Invalid version type: {version_type}")
 
     new_version = f"{major}.{minor}.{patch}"
-    prefix = version.tag.replace(version.version_string, "")
+    if version.tag.endswith(version.version_string):
+        prefix = version.tag[:-len(version.version_string)]
+    else:
+        # Fallback, though this shouldn't happen with valid VersionInfo
+        prefix = version.tag.replace(version.version_string, "", 1)
     new_tag = f"{prefix}{new_version}"
 
     return new_version, new_tag

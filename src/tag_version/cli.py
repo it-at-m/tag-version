@@ -54,6 +54,7 @@ from tag_version.constants import (
     CLI_WORKFLOW_TRIGGERED,
 )
 from tag_version.core import (
+    VersionInfo,
     create_git_tag,
     filter_tags_by_prefix,
     get_git_tags,
@@ -130,7 +131,7 @@ def print_color(message: str, color: str = Fore.WHITE, end="\n"):
     "--prefix",
     "-p",
     type=click.STRING,
-    help="Custom prefix for the tag (overrides the default 'mucgpt-<service>-' format)",
+    help="Custom prefix for the tag (overrides the configured format)",
 )
 @click.option(
     "--yes",
@@ -287,8 +288,6 @@ def main(
 
     else:
         print_color(CLI_NO_VALID_VERSION_TAGS, color=Fore.YELLOW + Back.RED)
-        # Create a dummy version object
-        from tag_version.core import VersionInfo
 
         latest_version_obj = VersionInfo(
             tag=f"{prefix}0.0.0", version_string="0.0.0", major=0, minor=0, patch=0
@@ -315,12 +314,9 @@ def main(
 
     # Create the tag
     try:
-        if create_git_tag(new_tag):
-            print_color(CLI_TAG_CREATED_LOCALLY.format(new_tag), color=Fore.GREEN)
-        else:
-            print_color(CLI_FAILED_TO_CREATE_TAG, color=Fore.RED)
-            sys.exit(1)
-    except Exception as e:
+        create_git_tag(new_tag)
+        print_color(CLI_TAG_CREATED_LOCALLY.format(new_tag), color=Fore.GREEN)
+    except RuntimeError  as e:
         print_color(CLI_ERROR_CREATING_TAG.format(str(e)), color=Fore.RED)
         print_color(CLI_FAILED_TO_CREATE_TAG, color=Fore.RED)
         sys.exit(1)

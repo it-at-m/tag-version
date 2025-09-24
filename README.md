@@ -1,4 +1,5 @@
 # tag_version
+
 [![Made with love by it@M][made-with-love-shield]][itm-opensource]
 <!-- feel free to add more shields, style 'for-the-badge' -> see https://shields.io/badges -->
 
@@ -8,19 +9,18 @@ A Python package for managing Git version tags using semantic versioning per com
 
 - Create semantic version tags (`major.minor.patch`)
 - Native git interaction
-    - Automatic detection of the latest version
-    - Git tag creation and pushing to remote repositories
+  - Automatic detection of the latest version
+  - Git tag creation and pushing to remote repositories
 - Nice to use
-    - Interactive service selection and version type input
-    - Colorful terminal output for better user experience
+  - Interactive service selection and version type input
+  - Colorful terminal output for better user experience
 - Easy to configure
-    - Configurable services and prefix format via pyproject.toml
-    - Support for custom tag prefixes
-
+  - Configurable services and prefix format via pyproject.toml
+  - Support for custom tag prefixes
 
 ### Built With
-- uv
 
+- uv
 
 ## Set up
 
@@ -72,8 +72,6 @@ When using uv:
 uv run tag-version --service frontend --version-type patch
 ```
 
-
-
 ### Command Line Options
 
 ```bash
@@ -83,7 +81,7 @@ Options:
   -t, --version-type [major|minor|patch]
                                  Version increment type (major, minor, patch)
   -p, --prefix TEXT              Custom prefix for the tag (overrides the 
-                                 default 'mucgpt-<service>-' format)
+                                 configured prefix_format)
   -y, --yes                      Skip confirmation prompts and automatically 
                                  proceed
   --services-list TEXT           Comma-separated list of available services 
@@ -123,7 +121,7 @@ tag-version --services-list "api,ui,database" --service api --version-type minor
 `tag-version` can be configured via the `pyproject.toml` file. Add a `[tag_version]` section with the following options:
 
 ```toml
-[tag_version]
+[tool.tag_version]
 # List of available services
 services = ["api", "ui", "backend", "database"]
 
@@ -131,13 +129,12 @@ services = ["api", "ui", "backend", "database"]
 prefix_format = "myproject-{service}-"
 
 # Links to service resources shown after successful tag push
-[tag_version.service_links]
+[tool.tag_version.service_links]
 api = "https://github.com/myorg/myproject/pkgs/container/myproject-api"
 ui = "https://github.com/myorg/myproject/pkgs/container/myproject-ui" 
 backend = "https://github.com/myorg/myproject/pkgs/container/myproject-backend"
 database = "https://github.com/myorg/myproject/pkgs/container/myproject-database"
 ```
-
 
 ## Development
 
@@ -154,7 +151,6 @@ uv sync
 ### Running Tests
 
 The project uses pytest for testing. You can run the tests using:
-
 
 ```bash
 # Run all tests
@@ -173,7 +169,6 @@ uv run pytest tests/test_tagger.py
 uv run pytest tests/test_tagger.py::test_filter_tags_by_prefix
 ```
 
-
 ## Contributing
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
@@ -190,15 +185,13 @@ Don't forget to give the project a star! Thanks again!
 
 More about this in the [CODE_OF_CONDUCT](/CODE_OF_CONDUCT.md) file.
 
-
 ## License
 
 Distributed under the MIT License. See [LICENSE](LICENSE) file for more information.
 
-
 ## Contact
 
-it@M - opensource@muenchen.de
+it@M - <opensource@muenchen.de>
 
 <!-- project shields / links -->
 [made-with-love-shield]: https://img.shields.io/badge/made%20with%20%E2%9D%A4%20by-it%40M-yellow?style=for-the-badge
