@@ -37,8 +37,8 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/it-at-m/tag_version"
-Issues = "https://github.com/it-at-m/tag_version/issues"
+Homepage = "https://github.com/it-at-m/tag-version"
+Issues = "https://github.com/it-at-m/tag-version/issues"
 
 
 
