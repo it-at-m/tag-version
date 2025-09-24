@@ -100,9 +100,9 @@ def test_full_version_workflow(mock_run):
     result = create_git_tag(new_tag)
     assert result is True
     mock_run.assert_called_with(
-        ["git", "tag", "service-0.0.1"], check=True, capture_output=True, text=True
+        ["git", "tag", "--", "service-0.0.1"], check=True, capture_output=True, text=True
     )
-
+    
     # 8. Push git tag (mocked)
     mock_run.reset_mock()
     mock_run.return_value = MagicMock(
@@ -113,7 +113,7 @@ def test_full_version_workflow(mock_run):
     assert success is True
     assert "service-0.0.1" in output
     mock_run.assert_called_with(
-        ["git", "push", "origin", "service-0.0.1"],
+        ["git", "push", "origin", "refs/tags/service-0.0.1"],
         check=True,
         capture_output=True,
         text=True,

@@ -128,17 +128,20 @@ def create_git_tag(tag: str, message: Optional[str] = None) -> bool:
     """
     try:
         if message:
-            # Create annotated tag with message
+            # Annotated tag; ensure tag isn't treated as an option
             subprocess.run(
-                ["git", "tag", "-a", tag, "-m", message],
+                ["git", "tag", "-a", "-m", message, "--", tag],
                 check=True,
                 capture_output=True,
                 text=True,
             )
         else:
-            # Create lightweight tag
+            # Lightweight tag; disambiguate tag name
             subprocess.run(
-                ["git", "tag", tag], check=True, capture_output=True, text=True
+                ["git", "tag", "--", tag],
+                check=True,
+                capture_output=True,
+                text=True,
             )
         return True
     except subprocess.CalledProcessError as e:
@@ -146,14 +149,17 @@ def create_git_tag(tag: str, message: Optional[str] = None) -> bool:
         # Don't print here, let the caller handle the error display
         raise RuntimeError(
             f"Command '{e.cmd}' returned non-zero exit status {e.returncode}.\n{error_message}"
-        )
+        ) from e
 
 
 def push_git_tag(tag: str) -> tuple[bool, str]:
     """Push git tag to remote repository"""
     try:
         result = subprocess.run(
-            ["git", "push", "origin", tag], check=True, capture_output=True, text=True
+            ["git", "push", "origin", f"refs/tags/{tag}"],
+            check=True,
+            capture_output=True,
+            text=True,
         )
         return True, result.stdout
     except subprocess.CalledProcessError as e:

@@ -349,10 +349,12 @@ def main(
         sys.exit(1)
 
     # Ask to push the tag
-    push_confirmed = yes or (
-        not no_push
-        and click.confirm("Do you want to push this tag to origin?", default=True)
-    )
+    if no_push:
+        push_confirmed = False
+    else:
+        push_confirmed = yes or click.confirm(
+            "Do you want to push this tag to origin?", default=True
+        )
 
     if push_confirmed:
         print_color(CLI_PUSHING_TAG, color=Fore.CYAN)

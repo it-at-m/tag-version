@@ -130,7 +130,7 @@ def test_create_git_tag_success(mock_run):
     result = create_git_tag("service-1.0.0")
     assert result is True
     mock_run.assert_called_once_with(
-        ["git", "tag", "service-1.0.0"], check=True, capture_output=True, text=True
+        ["git", "tag", "--", "service-1.0.0"], check=True, capture_output=True, text=True
     )
 
 
@@ -144,7 +144,7 @@ def test_create_git_tag_annotated_success(mock_run):
     result = create_git_tag("service-1.0.0", "Release version 1.0.0")
     assert result is True
     mock_run.assert_called_once_with(
-        ["git", "tag", "-a", "service-1.0.0", "-m", "Release version 1.0.0"],
+        ["git", "tag", "-a", "-m", "Release version 1.0.0", "--", "service-1.0.0"],
         check=True,
         capture_output=True,
         text=True,
@@ -161,7 +161,7 @@ def test_create_git_tag_empty_message(mock_run):
     result = create_git_tag("service-1.0.0", "")
     assert result is True
     mock_run.assert_called_once_with(
-        ["git", "tag", "service-1.0.0"], check=True, capture_output=True, text=True
+        ["git", "tag", "--", "service-1.0.0"], check=True, capture_output=True, text=True
     )
 
 
@@ -195,7 +195,7 @@ def test_push_git_tag_success(mock_run):
     assert success is True
     assert output == mock_process.stdout
     mock_run.assert_called_once_with(
-        ["git", "push", "origin", "service-1.0.0"],
+        ["git", "push", "origin", "refs/tags/service-1.0.0"],
         check=True,
         capture_output=True,
         text=True,

@@ -79,7 +79,7 @@ def test_cli_with_arguments(mock_load_config, mock_create_tag, mock_get_tags, ru
     assert "Using prefix: myproject-service1-" in result.output
     assert "Selected version type: patch" in result.output
     assert f"Tag {prefix}1.0.1 created locally." in result.output
-    assert "The tag was created locally but could not be pushed" in result.output
+    assert "Tag was created locally but not pushed" in result.output
 
     # Verify tag creation
     mock_create_tag.assert_called_once_with(f"{prefix}1.0.1", None)
